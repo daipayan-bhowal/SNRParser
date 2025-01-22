@@ -78,8 +78,6 @@
    - Teaching parsing concepts and demonstrating how to process programming language constructs.
 
 ---
-## System Requirements
- **Windows 11 and Visual Studio 2019**
 
 ## Definitions
 
@@ -150,6 +148,9 @@
    - Parsing is successful if all tokens are processed without errors.
 
 ---
-
+## System Requirements
+ **Windows 11 and Visual Studio 2019**
+ 
+---
 ## Summary
 This document outlines a stackless, non-recursive (SNR) parser algorithm for parsing C language constructs efficiently. It employs mathematical abstractions for initialization, grammar checks, error handling, and state reinitialization to ensure robust and structured parsing.
