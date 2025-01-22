@@ -1,7 +1,7 @@
 
 # Stackless Non-Recursive(SNR) Parser for C Programming Language
 
-Note: This repo is designed Visual Studio 2019
+Note: This repo is designed in Visual Studio 2019
 
 ## SNR Parser is a Dynamic Programming(DP)-based parser which is stackless and non-recursive in nature that is designed for parsing C Programming Language
 
