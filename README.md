@@ -33,8 +33,11 @@ Note: This repo is designed in Visual Studio 2019
 
 2. **Robustness**:
    - Reduced risk of stack overflow compared to recursive parsers.
+   
+3. **Scalability**:
+   - This type of parser is very easy to scale, as it is more modular in nature.
 
-3. **Mathematical Foundation**:
+4. **Clarity**:
    - Provides clarity and precision in defining parsing rules and workflows.
 
 ---
