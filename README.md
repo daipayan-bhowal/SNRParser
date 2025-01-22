@@ -5,7 +5,7 @@ Note: This repo is designed in Visual Studio 2019
 
 ## SNR Parser is a Dynamic Programming(DP)-based parser which is stackless and non-recursive in nature that is designed for parsing C Programming Language
 
-## Disadvantages of current parsers
+## Disadvantages of Legacy parsers
 
 1. **Limited Grammar Support**:
    - These parsers struggle with left-recursive, ambiguous, or highly complex grammars without significant transformations or enhancements.
