@@ -2,8 +2,6 @@
 # Stackless Non-Recursive(SNR) Parser: A Dynamic Programming-based parser which is stackless and non-recursive in nature that is designed for parsing C Programming language grammer
 
 
-# Mathematical Notations
-
 ## Definitions
 
 1. **TokenStream**:  
