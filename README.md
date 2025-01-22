@@ -78,6 +78,8 @@
    - Teaching parsing concepts and demonstrating how to process programming language constructs.
 
 ---
+## System Requirements
+ **Windows 11 and Visual Studio 2019**
 
 ## Definitions
 
