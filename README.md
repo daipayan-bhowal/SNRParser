@@ -3,6 +3,28 @@
 
 ## SNR Parser is a Dynamic Programming(DP)-based parser which is stackless and non-recursive in nature that is designed for parsing C Programming Language
 
+## Disadvantages of current parsers
+
+1. **Limited Grammar Support**:
+   - These parsers struggle with left-recursive, ambiguous, or highly complex grammars without significant transformations or enhancements.
+
+2. **Ambiguity Handling**:
+   - None of these parsers can naturally handle ambiguous grammars (e.g., the "dangling else" problem) without additional logic or grammar restructuring.
+
+3. **Error Recovery Challenges**:
+   - Robust error recovery mechanisms are difficult to implement, which impacts usability in compilers and IDEs.
+
+4. **Grammar Transformations**:
+   - Preprocessing like left-factoring, removing left recursion, or grammar simplification is often required, adding to development complexity.
+
+5. **Scalability Issues**:
+   - As grammars grow larger or more intricate, maintaining parsing rules or tables becomes increasingly cumbersome.
+
+6. **Performance Overheads**:
+   - Recursive parsers may suffer from stack overflow or excessive backtracking, while table-driven parsers like SLR have large memory overheads for parsing tables.
+
+---
+
 ## Why Choose SNR Parser?
 1. **Resource Efficiency**:
    - Ideal for low-resource environments where memory usage is a critical factor.
