@@ -52,13 +52,10 @@ Note: This repo is designed in Visual Studio 2019
 3. **Error Handling**:
    - Errors are detected and reported immediately during parsing, providing precise feedback about the source of the error.
 
-4. **Mathematical Rigor**:
-   - The parsing process is well-defined mathematically, making it easier to validate and extend the algorithm.
-
-5. **Real-time Parsing**:
+4. **Real-time Parsing**:
    - Suitable for environments where real-time feedback is critical, such as Integrated Development Environments (IDEs) or code editors.
 
-6. **Customizability**:
+5. **Customizability**:
    - The modular design allows easy adaptation for other programming languages or specific grammar extensions.
 
 ---
