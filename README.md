@@ -3,7 +3,7 @@
 
 Note: This repo is designed in Visual Studio 2019, this parser only validates the syntax doesn't generate any form of tree
 
-## SNR Parser is a Dynamic Programming(DP)-based parser which is stackless and non-recursive in nature that is designed for parsing C Programming Language
+## SNR Parser is a Dynamic Programming(DP)-based handwritten parser which is stackless and non-recursive in nature that is designed for parsing C Programming Language
 
 ## Disadvantages of Legacy parsers
 
