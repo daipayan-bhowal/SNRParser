@@ -1604,65 +1604,65 @@ void global_scope()
             if (parsing_check[is_mdecl] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_mdecl];
-                printf("multiple declaration!");
+                printf("multiple declaration!\n");
             }
             if (parsing_check[is_func_def] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_func_def];
-                printf("function defination!");
+                printf("function defination!\n");
             }
             if (parsing_check[is_func_decl] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_func_decl];
-                printf("function declaration!");
+                printf("function declaration!\n");
             }
             if (parsing_check[is_blk_end] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_blk_end];
-                printf("block end encountered!");
+                printf("block end encountered!\n");
             }
             if (parsing_check[is_enum_def] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_enum_def];
-                printf("enum encountered!");
+                printf("enum encountered!\n");
             }
             if (parsing_check[is_struct_def] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_struct_def];
-                printf("struct defination encountered!");
+                printf("struct defination encountered!\n");
             }
             if (parsing_check[is_struct_dcl]==TRUE)
             {
                 dist = getTokenNumber() - startToken[is_struct_dcl];
-                printf("struct declaration encountered!");
+                printf("struct declaration encountered!\n");
             }
             if (parsing_check[is_struct_fun_def] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_struct_fun_def];
-                printf("struct func def encountered!");
+                printf("struct func def encountered!\n");
             }
             if (parsing_check[is_struct_fun_dcl] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_struct_fun_dcl];
-                printf("struct func dcl encountered!");
+                printf("struct func dcl encountered!\n");
             }
             if (parsing_check[is_func_caller] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_func_caller];
                // debugToken();
-                printf("func caller encountered! %d", startToken[is_func_caller]);
+                printf("func caller encountered! %d\n", startToken[is_func_caller]);
             }
             if (parsing_check[is_stmt] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_stmt];
                 // debugToken();
-                printf("statement encountered! %d , type is:%d", startToken[is_stmt], type);
+                printf("statement encountered! %d , type is:%d\n", startToken[is_stmt], type);
             }
             if (parsing_check[is_express] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_express];
                 // debugToken();
-                printf("expression encountered! %d , type is:%d", startToken[is_express], type);
+                printf("expression encountered! %d\n", startToken[is_express]);
             }
             printf("\n");
 
