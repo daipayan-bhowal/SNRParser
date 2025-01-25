@@ -11,6 +11,7 @@ void function_caller(_bool*);
 void declaration_specifiers(_bool* is_decl_sp, int* type);
 void args(_bool* is_args);
 void block_start_statement(_bool* is_blk);
+_bool is_circularbraces_expr(_bool* expr, int curly_brace_level);
 
 
 enum parser_check // enum is used for indexing the different types of language elements such as expr, stmt, func_def
@@ -29,6 +30,7 @@ enum parser_check // enum is used for indexing the different types of language e
     is_struct_fun_dcl,
     is_func_caller,
     is_stmt,
+    is_express,
     MAX_SIZE
 };
 
@@ -39,6 +41,8 @@ _bool is_expr(_bool* expr)
 {
     *expr = FALSE;
     int count = 0;
+    int valid_expr = 0;
+    bool first_id = false;
  /*   _bool* func_caller = FALSE;
     function_caller(&func_caller);
     if (func_caller == TRUE)
@@ -46,6 +50,153 @@ _bool is_expr(_bool* expr)
         *expr = TRUE;
         return;
     } */
+  //  printf("\nis_expr: %d\n", tok);
+    if (tok == '('
+        )
+    {
+
+        return is_circularbraces_expr(expr, 1);
+    }
+    // an expression can start with ID
+    else if (tok == ID ||
+        tok == STROBJ
+        )
+    {
+        if (tok == ID &&
+            (prevToken() == INT ||
+            prevToken() == LONG ||
+            prevToken() == FLOAT ||
+            prevToken() == SIGNED ||
+            prevToken() == UNSIGNED ||
+            prevToken() == STRUCT ||
+            prevToken() == UNION )
+            )
+        {
+            *expr = FALSE;
+            return *expr;
+        }
+        if (lookupToken() != '+' &&
+            lookupToken() != '-' &&
+            lookupToken() != '/' &&
+            lookupToken() != '*' &&
+            lookupToken() != '%' &&
+            lookupToken() != '^' &&
+            lookupToken() != '<' &&
+            lookupToken() != '>' &&
+            lookupToken() != '|' &&
+            lookupToken() != '?' &&
+            lookupToken() != ':' &&
+            lookupToken() != ';' &&
+            lookupToken() != ')' &&
+            lookupToken() != '~' &&
+            lookupToken() != '=' &&
+            lookupToken() != '!' &&
+            lookupToken() != ADD_ASSIGN &&
+            lookupToken() != INC_OP &&
+            lookupToken() != SUB_ASSIGN &&
+            lookupToken() != DEC_OP &&
+            lookupToken() != DIV_ASSIGN &&
+            lookupToken() != MUL_ASSIGN &&
+            lookupToken() != MOD_ASSIGN &&
+            lookupToken() != AND_ASSIGN &&
+            lookupToken() != XOR_ASSIGN &&
+            lookupToken() != OR_ASSIGN &&
+            lookupToken() != NOT_ASSIGN &&
+            lookupToken() != RIGHT_SHFT_OP &&
+            lookupToken() != LEFT_SHFT_OP &&
+            lookupToken() != EQ_EQ_COND &&
+            lookupToken() != GRT_OP &&
+            lookupToken() != LESR_OP &&
+            lookupToken() != GRT_EQ_OP &&
+            lookupToken() != LESR_EQ_OP)
+        {
+            *expr = FALSE;
+            return *expr;
+        }
+      //  nextToken();
+     }
+    // an expression can start with integer or constant literal
+    else if ( tok == INT_CONST ||
+         tok == CHAR_CONST ||
+         tok == F_CONST ||
+         tok == OCTAL_CONST ||
+         tok == USIGN_INT_CONST ||
+         tok == LONG_INT_CONST ||
+         tok == LONG_DOUBLE_CONST ||
+         tok == E_F_CONST
+        )
+    {
+        if (lookupToken() != '+' &&
+            lookupToken() != '-' &&
+            lookupToken() != '/' &&
+            lookupToken() != '*' &&
+            lookupToken() != '%' &&
+            lookupToken() != '^' &&
+            lookupToken() != '<' &&
+            lookupToken() != '>' &&
+            lookupToken() != '|' &&
+            lookupToken() != '?' &&
+            lookupToken() != ':' &&
+            lookupToken() != ';' &&
+            lookupToken() != RIGHT_SHFT_OP &&
+            lookupToken() != LEFT_SHFT_OP &&
+            lookupToken() != GRT_OP &&
+            lookupToken() != LESR_OP &&
+            lookupToken() != EQ_EQ_COND &&
+            lookupToken() != GRT_EQ_OP &&
+            lookupToken() != LESR_EQ_OP
+            )
+        { 
+            *expr = FALSE;
+            return *expr;       
+        }
+      //  nextToken();
+    }
+    // an expression can start with ++,-- or any other unary operator
+    else if (tok == INC_OP ||
+        tok == DEC_OP ||
+        tok == '!' ||
+        tok == '&' 
+        )
+    {
+        if (lookupToken() !=  ID)
+        {
+            *expr = FALSE;
+            return *expr;
+        }
+
+    }
+    else if (tok == '-' ||
+        tok == '+'
+        )
+    {
+        if (lookupToken() != ID &&
+            lookupToken() != INT_CONST &&
+            lookupToken() != CHAR_CONST &&
+            lookupToken() != F_CONST &&
+            lookupToken() != OCTAL_CONST &&
+            lookupToken() != USIGN_INT_CONST &&
+            lookupToken() != LONG_INT_CONST &&
+            lookupToken() != LONG_DOUBLE_CONST &&
+            lookupToken() != E_F_CONST
+            )
+        {
+            *expr = FALSE;
+            return *expr;
+        } 
+        else {
+            nextToken();
+            if (lookupToken() == ';')
+            {
+                *expr = TRUE;
+                return *expr;
+            }
+
+        }
+
+    }
+
+  
   while ( tok == '+' ||
           tok == '-' ||
           tok == '/' ||
@@ -62,7 +213,8 @@ _bool is_expr(_bool* expr)
           tok == '~' ||
           tok == '=' ||
           tok == '!' ||
-          tok == ID ||
+          tok == ID  ||
+          tok == STROBJ ||
           tok == ADD_ASSIGN ||
           tok == INC_OP ||
           tok == SUB_ASSIGN ||
@@ -74,8 +226,8 @@ _bool is_expr(_bool* expr)
           tok == XOR_ASSIGN ||
           tok == OR_ASSIGN ||
           tok == NOT_ASSIGN ||
-          tok == RIGHT_OP ||
-          tok == LEFT_OP ||
+          tok == RIGHT_SHFT_OP ||
+          tok == LEFT_SHFT_OP ||
           tok == EQ_EQ_COND ||
           tok == GRT_EQ_OP ||
           tok == LESR_EQ_OP ||
@@ -99,7 +251,7 @@ _bool is_expr(_bool* expr)
       tok != '%' &&
       tok != '^' &&
       tok != '<' &&
-      tok != '>' &&
+      tok != '>' && 
       tok != '|' &&
       tok != '?' &&
       tok != ':' &&
@@ -113,6 +265,7 @@ _bool is_expr(_bool* expr)
       tok != '=' &&
       tok != '!' &&
       tok != ID &&
+      tok != STROBJ &&
       tok != ADD_ASSIGN &&
       tok != INC_OP &&
       tok != SUB_ASSIGN &&
@@ -124,8 +277,8 @@ _bool is_expr(_bool* expr)
       tok != XOR_ASSIGN &&
       tok != OR_ASSIGN &&
       tok != NOT_ASSIGN &&
-      tok != RIGHT_OP &&
-      tok != LEFT_OP &&
+      tok != RIGHT_SHFT_OP &&
+      tok != LEFT_SHFT_OP &&
       tok != EQ_EQ_COND &&
       tok != GRT_EQ_OP &&
       tok != LESR_EQ_OP &&
@@ -141,7 +294,7 @@ _bool is_expr(_bool* expr)
       printf("error: expression token at %d is invalid!", getTokenNumber());
       exit(0);
   }
-  if (count >= 0 && (tok == ';' || tok == '{'))
+  if (count > 0 && (tok == ';' || tok == '{'))
   {
       printf("expr is true\n");
       *expr = TRUE;
@@ -190,8 +343,8 @@ _bool is_circularbraces_expr(_bool* expr, int curly_brace_level)
         tok == XOR_ASSIGN ||
         tok == OR_ASSIGN ||
         tok == NOT_ASSIGN ||
-        tok == RIGHT_OP ||
-        tok == LEFT_OP ||
+        tok == RIGHT_SHFT_OP ||
+        tok == LEFT_SHFT_OP ||
         tok == EQ_EQ_COND ||
         tok == GRT_EQ_OP ||
         tok == LESR_EQ_OP ||
@@ -261,8 +414,8 @@ _bool is_circularbraces_expr(_bool* expr, int curly_brace_level)
         tok != XOR_ASSIGN &&
         tok != OR_ASSIGN &&
         tok != NOT_ASSIGN &&
-        tok != RIGHT_OP &&
-        tok != LEFT_OP &&
+        tok != RIGHT_SHFT_OP &&
+        tok != LEFT_SHFT_OP &&
         tok != EQ_EQ_COND &&
         tok != GRT_EQ_OP &&
         tok != LESR_EQ_OP &&
@@ -445,19 +598,21 @@ void  struct_defination_or_declaration(_bool* is_struct_def, _bool* is_struct_dc
     {
         nextToken();
     }
-
+ //   printf("struct defination line number 601 , tok:%d\n ", tok);
     if (tok == STRUCT ||
         tok == UNION)
     {
-
+     //   printf("struct defination line number 605\n ");
         if (prevToken() == '(' || prevToken() == ',')
         {
             return;
         }
-
+        
         nextToken();
+      //  printf("struct defination line number 610, tok pos: %d, tok:%d\n ", getTokenNumber(), tok);
         if (tok == ID)
         {
+       //     printf("struct defination line number 614\n ");
             nextToken();
             if (tok == ID)
             {
@@ -533,6 +688,7 @@ void  struct_defination_or_declaration(_bool* is_struct_def, _bool* is_struct_dc
                 nextToken();
                 _bool is_dcl = FALSE;
                 int type;
+             //   printf("structure defination is calling  declaration_specifiers! \n");
                 declaration_specifiers(&is_dcl, &type);
                 while (is_dcl == TRUE)
                 {
@@ -973,7 +1129,7 @@ void declaration_specifiers(_bool* is_decl_sp, int* type)
 { 
     *is_decl_sp = FALSE;
     char specifier_bit1 = 0, specifier_bit2 = 0, specifier_bit3 = 0;
-    printf("declaration_specifiers: is_decl_sp:%d\n", *is_decl_sp);
+ //   printf("declaration_specifiers: is_decl_sp:%d\n", *is_decl_sp);
     dispToken(tok);
     if (tok == TYPEDEF ||
         tok == EXTERN ||
@@ -998,7 +1154,7 @@ void declaration_specifiers(_bool* is_decl_sp, int* type)
         specifier_bit2 = 1;
         nextToken();
     }
-    printf("declaration_specifiers: tok is: %d %d\n", tok, __LINE__);
+  //  printf("declaration_specifiers: tok is: %d %d\n", tok, __LINE__);
     dispToken(tok);
     if (tok == VOID ||
         tok == CHAR ||
@@ -1022,8 +1178,9 @@ void declaration_specifiers(_bool* is_decl_sp, int* type)
         return;
     }
     // for struct arguments in a function arguments, chances of infinite loop is more in below check
-    else if (getTokenNumber() != 0 && (prevToken() == '(' || prevToken() == ',') && (tok == STRUCT || tok == UNION)) // need to backtrack if failed! as struct is commons between 2 driver functions so conflict can occur, only support struct arguments
+    else if (getTokenNumber() > 1 && (prevToken() == '(' || prevToken() == ',') && (tok == STRUCT || tok == UNION)) // need to backtrack if failed! as struct is commons between 2 driver functions so conflict can occur, only support struct arguments
     {
+     //   printf("declaration_specifiers inside struct func arguments ! : tok is: %d token pos:%d line no:%d\n", tok,getTokenNumber(), __LINE__);
         *type = tok;
         nextToken();
         if (tok == ID)
@@ -1060,6 +1217,7 @@ void declaration_specifiers(_bool* is_decl_sp, int* type)
         
     }
     else {
+      //  printf("error condition in decl_Specf, tok:%d tok_pos:%d", tok,getTokenNumber());
         make_error("Type missing in declaration\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
         *is_decl_sp = FALSE;
         return;
@@ -1083,7 +1241,7 @@ void declaration_specifiers(_bool* is_decl_sp, int* type)
     if (tok == ID && *is_decl_sp == TRUE)
     {
         *is_decl_sp = TRUE;
-        printf("declarataion parsing successful !\n");
+     //   printf("declarataion parsing successful !\n");
         nextToken();
 
     }
@@ -1141,6 +1299,7 @@ void args(_bool* is_args)
         }
         _bool paramter_var = FALSE;
         int type;
+     //   printf("args() is calling declaration_specifiers!\n");
         declaration_specifiers(&paramter_var, &type);
         if (paramter_var == FALSE)
         {
@@ -1261,9 +1420,10 @@ void function_definition_or_declaration(_bool* is_func_def, _bool* is_func_decl)
 {
     _bool is_decl = FALSE, is_args = FALSE, is_blk = FALSE, is_stmt = FALSE;
     int type;
+   // printf("func_decl_or_def is calling  declaration_specifiers!   tok_pos:%d tok:%d", getTokenNumber(), tok);
     declaration_specifiers(&is_decl, &type);
     debugToken();
-    printf("func_decl_or_def %d %d tok:%d tok_pos:%d\n ", *is_func_def, *is_func_decl, tok, getTokenNumber());
+  //  printf("func_decl_or_def %d %d tok:%d tok_pos:%d is_decl:%d\n ", *is_func_def, *is_func_decl, tok, getTokenNumber(), is_decl);
     if (is_decl == FALSE)
     {
         *is_func_def = FALSE;
@@ -1297,14 +1457,14 @@ void multiple_declaration(_bool* is_multidecl)
     //debugToken();
     _bool is_decl_sp = FALSE, is_comma = FALSE;
     int type;
-    printf("multiple_declaration is is_decl_sp:%s tok:%c\n", (is_decl_sp == TRUE) ? "TRUE" : "FALSE", tok);
+  //  printf("multiple_declaration is is_decl_sp:%s tok:%c\n", (is_decl_sp == TRUE) ? "TRUE" : "FALSE", tok);
     declaration_specifiers(&is_decl_sp, &type);
-   
+  //  printf("multiple_declaration after decl_specf call! tok:%d tok_pos:%d\n", tok,getTokenNumber());
     if (tok == '(') // backtrack needed, this case needs to be handled by func_defination_or_declarartion()
     {
         *is_multidecl = FALSE;       
         resetToken(startToken[is_mdecl]); // backtracking by reseting the token position to the place just before starting the parsing
-        printf("backtracking multiple_declaration is is_decl_sp:%s tok:%c tok_pos is:%d start_tok_pos is %d\n", (is_decl_sp == TRUE) ? "TRUE" : "FALSE", tok, getTokenNumber(), startToken[is_mdecl]);
+    //    printf("backtracking multiple_declaration is is_decl_sp:%s tok:%c tok_pos is:%d start_tok_pos is %d\n", (is_decl_sp == TRUE) ? "TRUE" : "FALSE", tok, getTokenNumber(), startToken[is_mdecl]);
         return;
     }
     if (is_decl_sp == FALSE)
@@ -1327,7 +1487,7 @@ void multiple_declaration(_bool* is_multidecl)
         return;
     }
 
-    printf("multiple_declaration: tok is: %d , is_decl_sp:%d\n", tok, (is_decl_sp == TRUE) ? "TRUE" : "FALSE");
+  //  printf("multiple_declaration: tok is: %d , is_decl_sp:%d\n", tok, (is_decl_sp == TRUE) ? "TRUE" : "FALSE");
     if (tok == ',')
     {
         is_comma = TRUE;
@@ -1359,7 +1519,7 @@ void multiple_declaration(_bool* is_multidecl)
         if (tok == ';')
         {
             *is_multidecl = TRUE;
-            printf("declaration ; encountered!\n");
+         //   printf("declaration ; encountered!\n");
             nextToken();
             return;
         }
@@ -1388,6 +1548,8 @@ void init_parsing_table()
     parsing_check[is_struct_fun_dcl] = FALSE;
     parsing_check[is_func_caller] = FALSE;
     parsing_check[is_stmt] = FALSE;
+    parsing_check[is_express] = FALSE;
+    
 }
 void global_scope()
 {
@@ -1395,7 +1557,9 @@ void global_scope()
     int j = 1, dist = 0;
     int type = 0;
     init_error();
+    nextToken(); // needed for initializing the tok and token position
     init_parsing_table();
+  //  printf("\n before starting token pos:%d, tok:%d\n", getTokenNumber(), tok);
     while (tok != EOF)
     {
           startToken[is_mdecl] = getTokenNumber();
@@ -1411,11 +1575,16 @@ void global_scope()
           startToken[is_struct_def] = getTokenNumber();
           startToken[is_struct_fun_def] = getTokenNumber();
           startToken[is_struct_fun_dcl] = getTokenNumber();
+      //    dispToken(tok);
           struct_defination_or_declaration(&parsing_check[is_struct_dcl], &parsing_check[is_struct_def], &parsing_check[is_struct_fun_def], &parsing_check[is_struct_fun_dcl]);
           startToken[is_func_caller] = getTokenNumber();        
           function_caller(&parsing_check[is_func_caller]);
           startToken[is_stmt] = getTokenNumber();
           statement(&parsing_check[is_stmt], &type);
+          startToken[is_express] = getTokenNumber();
+      //    debugToken();
+          //is_expr(&parsing_check[is_express]);
+
          // debugToken();
          // printf("\ntoken is: %c token position is:%d\n", tok, getTokenNumber());
  /*       for (j = 1; j < MAX_SIZE; j++) // index refers to enum parser_check
@@ -1430,7 +1599,7 @@ void global_scope()
  */
 
 
-        printf("before switch is %d\n", getTokenNumber());
+      //  printf("before switch is %d\n", getTokenNumber());
 
             if (parsing_check[is_mdecl] == TRUE)
             {
@@ -1489,6 +1658,12 @@ void global_scope()
                 // debugToken();
                 printf("statement encountered! %d , type is:%d", startToken[is_stmt], type);
             }
+            if (parsing_check[is_express] == TRUE)
+            {
+                dist = getTokenNumber() - startToken[is_express];
+                // debugToken();
+                printf("expression encountered! %d , type is:%d", startToken[is_express], type);
+            }
             printf("\n");
 
             if (
@@ -1504,7 +1679,8 @@ void global_scope()
                 parsing_check[is_enum_func_def] == FALSE &&
                 parsing_check[is_enum_func_decl] == FALSE &&
                 parsing_check[is_func_caller] == FALSE &&
-                parsing_check[is_stmt] == FALSE
+                parsing_check[is_stmt] == FALSE &&
+                parsing_check[is_express] == FALSE
                 )
             {
                 //i = startToken[is_mdecl];
