@@ -6,7 +6,7 @@
 // expression related words, which needs to be removed as lexer already has 
 enum expr
 {
-    ELIF,
+    ELIF=256,
     ADD_ASSIGN,
     INC_OP,
     SUB_ASSIGN,
@@ -18,8 +18,6 @@ enum expr
     XOR_ASSIGN,
     OR_ASSIGN,
     NOT_ASSIGN,
-    RIGHT_OP,
-    LEFT_OP,
     EQ_EQ_COND,
     GRT_EQ_OP,
     LESR_EQ_OP,
@@ -30,13 +28,18 @@ enum expr
     USIGN_INT_CONST,
     LONG_INT_CONST,
     LONG_DOUBLE_CONST,
-    E_F_CONST
+    E_F_CONST,
+    GRT_OP,
+    LESR_OP,
+    RIGHT_SHFT_OP,
+    LEFT_SHFT_OP,
+    STROBJ
 };
 
 
 enum keywords
 {
-    TYPEDEF,
+    TYPEDEF = 284,
     EXTERN,
     STATIC,
     AUTO,
@@ -81,12 +84,15 @@ void nextToken()
     i++;
 }
 int prevToken()
-{
-    return arr[i - 1];
+{ 
+    if (i < 0)
+        return -1;
+    
+    return arr[i - 2];
 }
 int lookupToken()
 {
-    return arr[i + 1];
+    return arr[i];
 }
 void resetToken(int k)
 {
