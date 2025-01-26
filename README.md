@@ -32,7 +32,7 @@ Note: This repo is designed in Visual Studio 2019, this parser only validates th
    - Ideal for low-resource environments where memory usage is a critical factor.
 
 2. **High-Performance and Low memory**:
-   - Provides high-performance & low-memory as less overhead as will as stack driven parsers have lot of memorization which consumes lot of space and execution time, recusive parsers
+   - Provides high-performance, low-overhead & low-memory as stack driven parsers have lot of memorization which consumes lot of space and execution time, recusive parsers
      are also slow as the call stack has overhead during calling of the function.   
 
 2. **Robustness**:
