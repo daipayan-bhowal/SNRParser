@@ -62,14 +62,14 @@ _bool is_expr(_bool* expr)
         tok == STROBJ
         )
     {
-        if (tok == ID &&
+        if (getTokenNumber() <= 1  || ( tok == ID &&
             (prevToken() == INT ||
             prevToken() == LONG ||
             prevToken() == FLOAT ||
             prevToken() == SIGNED ||
             prevToken() == UNSIGNED ||
             prevToken() == STRUCT ||
-            prevToken() == UNION )
+            prevToken() == UNION ))
             )
         {
             *expr = FALSE;
@@ -291,8 +291,9 @@ _bool is_expr(_bool* expr)
       tok != LONG_DOUBLE_CONST &&
       tok != E_F_CONST)
   {
-      printf("error: expression token at %d is invalid!", getTokenNumber());
-      exit(0);
+      make_error("error: expression token at %d is invalid!", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
+      *expr = FALSE;
+      return *expr;
   }
   if (count > 0 && (tok == ';' || tok == '{'))
   {
@@ -1583,7 +1584,7 @@ void global_scope()
           statement(&parsing_check[is_stmt], &type);
           startToken[is_express] = getTokenNumber();
       //    debugToken();
-          //is_expr(&parsing_check[is_express]);
+          is_expr(&parsing_check[is_express]);
 
          // debugToken();
          // printf("\ntoken is: %c token position is:%d\n", tok, getTokenNumber());
