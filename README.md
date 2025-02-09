@@ -134,7 +134,8 @@ Note: This repo is designed in Visual Studio 2019, this parser only validates th
      - Check grammar rules:  
        - `P(IsMultipleDecl) ← M(tᵢ)`  
        - `P(IsFunctionDef), P(IsFunctionDecl) ← F(tᵢ)`  
-       - `P(IsBlockEnd) ← B(tᵢ)`, etc.
+       - `P(IsBlockEnd) ← B(tᵢ)`
+       - `P(IsEnumDef), P(IsEnumFunctionDef), P(IsEnumFunctionDecl) ← E(tᵢ)`, etc.
 
 ### 4. Compute Distance:
    - If `P(s) = TRUE` for any state `s`:  
