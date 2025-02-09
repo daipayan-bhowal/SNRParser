@@ -44,6 +44,9 @@ Note: This repo is designed in Visual Studio 2019, this parser only validates th
 4. **Clarity**:
    - Provides clarity and precision in defining parsing rules and workflows.
 
+5. **Limited backtracking**:
+   - It has limited backtracking and cases are very clear and understandable.
+
 ---
 
 ## Advantages
