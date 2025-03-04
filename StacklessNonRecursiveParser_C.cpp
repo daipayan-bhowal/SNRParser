@@ -1,13 +1,13 @@
 /*
-  Stackless Non-Recursive(SNR) Parser for C language 
-  2024 Copyright@ Daipayan Bhowal 
+  Stackless Non-Recursive(SNR) Parser for C language
+  2024 Copyright@ Daipayan Bhowal
 */
 
 #include <stdio.h>
 #include "commons.h"
 #include <stdlib.h>
 
-void function_caller(_bool*);
+_bool function_caller();
 void declaration_specifiers(_bool* is_decl_sp, int* type);
 void args(_bool* is_args);
 void block_start_statement(_bool* is_blk);
@@ -28,7 +28,7 @@ enum parser_check // enum is used for indexing the different types of language e
     is_struct_dcl,
     is_struct_fun_def,
     is_struct_fun_dcl,
-    is_func_caller,
+    // is_func_caller,
     is_stmt,
     is_express,
     MAX_SIZE
@@ -43,19 +43,48 @@ _bool is_expr(_bool* expr)
     int count = 0;
     int valid_expr = 0;
     bool first_id = false;
- /*   _bool* func_caller = FALSE;
-    function_caller(&func_caller);
-    if (func_caller == TRUE)
+    _bool func_caller = FALSE;
+    //  printf("\nis_expr: %d\n", tok);
+    if (tok == '}')
     {
-        *expr = TRUE;
-        return;
-    } */
-  //  printf("\nis_expr: %d\n", tok);
-    if (tok == '('
-        )
+        return *expr;
+    }
+    else if (tok == '('
+        && prevToken() != ID)
     {
 
         return is_circularbraces_expr(expr, 1);
+    }
+    else if ((
+        tok == DO ||
+        tok == IF ||
+        tok == ELSE ||
+        tok == FOR ||
+        tok == WHILE ||
+        tok == SWITCH ||
+        tok == CASE ||
+        tok == DEFAULT ||
+        tok == TYPEDEF ||
+        tok == EXTERN ||
+        tok == STATIC ||
+        tok == AUTO ||
+        tok == REGISTER ||
+        tok == CONST ||
+        tok == VOLATILE ||
+        tok == VOID ||
+        tok == CHAR ||
+        tok == SHORT ||
+        tok == INT ||
+        tok == LONG ||
+        tok == FLOAT ||
+        tok == DOUBLE ||
+        tok == SIGNED ||
+        tok == UNSIGNED ||
+        tok == STRUCT ||
+        tok == UNION))
+    {
+        *expr = FALSE;
+        return *expr;
     }
     // an expression can start with ID
     else if (tok == ID ||
@@ -87,6 +116,7 @@ _bool is_expr(_bool* expr)
             lookupToken() != '?' &&
             lookupToken() != ':' &&
             lookupToken() != ';' &&
+            lookupToken() != '(' &&
             lookupToken() != ')' &&
             lookupToken() != '~' &&
             lookupToken() != '=' &&
@@ -195,9 +225,10 @@ _bool is_expr(_bool* expr)
         }
 
     }
-
+ 
   
-  while ( tok == '+' ||
+  while (
+          tok == '+' ||
           tok == '-' ||
           tok == '/' ||
           tok == '*' ||
@@ -240,10 +271,25 @@ _bool is_expr(_bool* expr)
           tok == LONG_DOUBLE_CONST ||
           tok == E_F_CONST)
   { 
+      _bool func_expr = FALSE;
+      if (tok == ID && lookupToken() == '(')
+      {
+          func_expr = function_caller();
+          if (func_expr == FALSE)
+          {
+              make_error("error: expression token at %d is invalid!", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
+              *expr = FALSE;
+              return *expr;
+          }
+          else
+          {
+              *expr = TRUE;
+          }
+      }
       count++;
       nextToken();
   }
-  if (tok != ';' &&
+  /*if (
       tok != '+' &&
       tok != '-' &&
       tok != '/' &&
@@ -257,8 +303,6 @@ _bool is_expr(_bool* expr)
       tok != ':' &&
       tok != '(' &&
       tok != ')' &&
-      tok != '{' &&
-      tok != '}' &&
       tok != '[' &&
       tok != ']' &&
       tok != '~' &&
@@ -289,13 +333,34 @@ _bool is_expr(_bool* expr)
       tok != USIGN_INT_CONST &&
       tok != LONG_INT_CONST &&
       tok != LONG_DOUBLE_CONST &&
-      tok != E_F_CONST)
+      tok != E_F_CONST &&
+      tok != TYPEDEF &&
+      tok != EXTERN &&
+      tok != STATIC &&
+      tok != AUTO &&
+      tok != REGISTER &&
+      tok != CONST &&
+      tok != VOLATILE &&
+      tok != VOID &&
+      tok != DO &&
+      tok != IF &&
+      tok != ELSE &&
+      tok != FOR &&
+      tok != WHILE &&
+      tok != SWITCH &&
+      tok != CASE &&
+      tok != DEFAULT
+      )
+  {
+      *expr = TRUE;
+  }
+  else
   {
       make_error("error: expression token at %d is invalid!", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
       *expr = FALSE;
       return *expr;
-  }
-  if (count > 0 && (tok == ';' || tok == '{'))
+  }*/
+  if (count > 0 && (tok == ';' || tok == '{' || tok == '}'))
   {
       printf("expr is true\n");
       *expr = TRUE;
@@ -1081,19 +1146,28 @@ void array_decl(_bool* is_arraydecl)
     }
     else if (tok == ID || tok == ICONST || tok == FCONST)
     {
-        _bool expr;
-        if (is_expr(&expr))
-        {
+         _bool expr;
+   /*      if (tok == ID && lookupToken() == '(')
+         {
+             nextToken();
+             nextToken();
+             function_caller(&func_caller);
+             if (func_caller == TRUE)
+             {
 
-        }
-        else if (tok == ID && lookupToken() == '(')
-        {
-            function_caller(&expr);
-        }
-        else
-        {
-
-        }
+             }
+         } */
+         is_expr(&expr);
+         if (expr == FALSE)
+         {
+            *is_arraydecl = FALSE;
+            make_error("expected expr after [\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
+            return;
+         }
+         else
+         {
+             *is_arraydecl = TRUE;
+         }
 
 
         // need to check whether it's an expression
@@ -1114,6 +1188,14 @@ void array_decl(_bool* is_arraydecl)
     }
     else if (is_open_sqbr == TRUE) // expression
     {
+        _bool expr = FALSE;
+        is_expr(&expr);
+        if (expr == FALSE)
+        {
+            *is_arraydecl = FALSE;
+            make_error("expected expr after [\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
+            return;
+        }
         nextToken();
     }
 
@@ -1323,21 +1405,22 @@ void args(_bool* is_args)
         args(is_args);
 }
 
-void function_caller(_bool* is_func_caller)
+_bool function_caller()
 {
     _bool is_id_before = FALSE;
     if (tok == ID)
     {
-        nextToken();
-        if (tok == '(')
+        //nextToken();
+        if (lookupToken() == '(')
         {
             if (block_level < 1)
             {
                 make_error(" function caller cannot be global!\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
-                return;
+                return FALSE;
             }
             nextToken();
-            while (tok != ')' && tok != EOF && tok != ';')
+            nextToken();
+            while (tok != ')' && tok != EOF)
             {
                 switch (tok)
                 {
@@ -1351,16 +1434,15 @@ void function_caller(_bool* is_func_caller)
                     if (is_id_before == FALSE)
                     {
                         make_error("Function callee is expecting id before ,\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
-                        return;
+                        return FALSE;
                     }
                     else
                         is_id_before = FALSE;
-                    break;
+                break;
 
                 default:
                     make_error("Function callee is expecting id before ,\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
-                    *is_func_caller = FALSE;
-                    return;
+                    return FALSE;
 
                 }
 
@@ -1371,21 +1453,42 @@ void function_caller(_bool* is_func_caller)
                 if (is_id_before == FALSE)
                 {
                     make_error("Function callee is expecting id before )\n", _FATAL_ERR, getTokenNumber(), __LINE__, __func__);
-                    return;
+                    return FALSE;
                 }
-                if (tok == ';')
+                if (tok == ';' ||
+                    tok == '<' ||
+                    tok == '>' ||
+                    tok == '+' ||
+                    tok == '-' ||
+                    tok == '*' ||
+                    tok == '/' ||
+                    tok == '%' ||
+                    tok == '^' ||
+                    tok == '|' ||
+                    tok == '!' ||
+                    tok == '=' ||
+                    tok == '?' ||
+                    tok == ':' ||
+                    tok == '.' ||
+                    tok == '&' ||
+                    tok == '[' ||
+                    tok == ']' ||
+                    tok == '(' ||
+                    tok == ')' 
+                    )
                 {
-                    nextToken();
-                    *is_func_caller = TRUE;
-                    return;
+                   // nextToken();
+                    return TRUE;
                 }
             }
             else
-                *is_func_caller = FALSE;
+            {
+                return FALSE;
+            }
         }
         else {
-            *is_func_caller = FALSE;
-            return;
+            
+            return FALSE;
         }
 
     }
@@ -1547,7 +1650,7 @@ void init_parsing_table()
     parsing_check[is_struct_def] = FALSE;
     parsing_check[is_struct_fun_def] = FALSE;
     parsing_check[is_struct_fun_dcl] = FALSE;
-    parsing_check[is_func_caller] = FALSE;
+ //   parsing_check[is_func_caller] = FALSE;
     parsing_check[is_stmt] = FALSE;
     parsing_check[is_express] = FALSE;
     
@@ -1578,8 +1681,8 @@ void global_scope()
           startToken[is_struct_fun_dcl] = getTokenNumber();
       //    dispToken(tok);
           struct_defination_or_declaration(&parsing_check[is_struct_dcl], &parsing_check[is_struct_def], &parsing_check[is_struct_fun_def], &parsing_check[is_struct_fun_dcl]);
-          startToken[is_func_caller] = getTokenNumber();        
-          function_caller(&parsing_check[is_func_caller]);
+       //   startToken[is_func_caller] = getTokenNumber();        
+       //   function_caller(&parsing_check[is_func_caller]);
           startToken[is_stmt] = getTokenNumber();
           statement(&parsing_check[is_stmt], &type);
           startToken[is_express] = getTokenNumber();
@@ -1647,12 +1750,12 @@ void global_scope()
                 dist = getTokenNumber() - startToken[is_struct_fun_dcl];
                 printf("struct func dcl encountered!\n");
             }
-            if (parsing_check[is_func_caller] == TRUE)
+        /*    if (parsing_check[is_func_caller] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_func_caller];
                // debugToken();
                 printf("func caller encountered! %d\n", startToken[is_func_caller]);
-            }
+            } */
             if (parsing_check[is_stmt] == TRUE)
             {
                 dist = getTokenNumber() - startToken[is_stmt];
@@ -1679,7 +1782,7 @@ void global_scope()
                 parsing_check[is_struct_fun_dcl] == FALSE &&
                 parsing_check[is_enum_func_def] == FALSE &&
                 parsing_check[is_enum_func_decl] == FALSE &&
-                parsing_check[is_func_caller] == FALSE &&
+              //  parsing_check[is_func_caller] == FALSE &&
                 parsing_check[is_stmt] == FALSE &&
                 parsing_check[is_express] == FALSE
                 )
